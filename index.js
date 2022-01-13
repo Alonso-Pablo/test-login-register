@@ -46,8 +46,22 @@ app.post('/login', async function(req, res) {
   const { email, password } = req.body
   let status = 200
 
-  if (!email && !password) {
+  /**
+   * Si no se envia el email o password lanza un error.
+   */
+  if (!email || !password) {
+    status = 400
+    response.message = "Bad request"
+    return res.status(status).send(response).end()
+  }
 
+  /**
+ * Si el email es invalido lanza un error.
+ */
+    if (!email.includes('@') || !email.includes('.')) {
+    status = 422
+    response.message = "EMAIL_NOT_VALID"
+    return res.status(status).send(response).end()
   }
 
   for (let i = 0; i < usersRegistered.length; i++) {
@@ -88,6 +102,36 @@ app.post('/register', async function(req, res) {
   const { email, password, passwordConfirmation } = req.body
   let isEmailUsed = false
 
+  /**
+   * Si no se envia el email o password lanza un error.
+   */
+  if (!email || !password || !passwordConfirmation) {
+    response.statusCode = 400
+    response.message = "Bad request"
+    return res.status(response.statusCode).send(response).end()
+  }
+
+  /**
+   * Si el email es invalido lanza un error.
+   */
+  if (!email.includes('@') || !email.includes('.')) {
+    response.statusCode = 422
+    response.message = "EMAIL_NOT_VALID"
+    return res.status(response.statusCode).send(response).end()
+  }
+
+  /**
+   * Si las dos contraseñas no coinciden da error.
+   */
+  if (password != passwordConfirmation) {
+    response.statusCode = 422
+    response.message = "PASSWORD_CONFIRMATION_NOT_MATCHING"
+    return res.status(response.statusCode).send(response).end()
+  }
+
+  /**
+   * Busca si el email esta siendo usado por otro usuario.
+   */
   for (let i = 0; i < usersRegistered.length; i++) {
     if (email === usersRegistered[i].email) {
       isEmailUsed = true
@@ -105,20 +149,11 @@ app.post('/register', async function(req, res) {
   }
 
   /**
-   * Si las dos contraseñas no coinciden da error.
-   */
-  if (password != passwordConfirmation) {
-    response.statusCode = 422
-    response.message = "PASSWORDS_NOT_MATCH"
-    return res.status(response.statusCode).send(response).end()
-  }
-
-  /**
    * Si la contraseña es menor a 8 caracteres lanza error.
    */
   if (password.lenght < 8) {
     response.statusCode = 422
-    response.message = "PASSWORDS_MIN_LENGHT:8"
+    response.message = "PASSWORD_MIN_LENGTH: 8"
     return res.status(response.statusCode).send(response).end()
   }
 
@@ -127,7 +162,7 @@ app.post('/register', async function(req, res) {
    */
   if (password.lenght > 16) {
     response.statusCode = 422
-    response.message = "PASSWORDS_MAX_LENGHT:16"
+    response.message = "PASSWORD_MAX_LENGTH: 16"
     return res.status(response.statusCode).send(response).end()
   }
 
@@ -136,7 +171,7 @@ app.post('/register', async function(req, res) {
    */
   if (!password.match(regex.symbol)) {
     response.statusCode = 422
-    response.message = "PASSWORDS_MISSING_SYMBOL"
+    response.message = "ASSWORDS_MISSING: SPECIAL_CHARACTER"
     return res.status(response.statusCode).send(response).end()
   }
 
@@ -145,7 +180,7 @@ app.post('/register', async function(req, res) {
    */
   if (!password.match(regex.lowerCase)) {
     response.statusCode = 422
-    response.message = "PASSWORDS_MISSING_LOWER_CASE"
+    response.message = "PASSWORDS_MISSING: LOWER_CASE_LETTER"
     return res.status(response.statusCode).send(response).end()
   }
 
@@ -154,7 +189,7 @@ app.post('/register', async function(req, res) {
    */
   if (!password.match(regex.upperCase)) {
     response.statusCode = 422
-    response.message = "PASSWORDS_MISSING_UPPER_CASE"
+    response.message = "PASSWORD_MISSING: UPPER_CASE_LETTER"
     return res.status(response.statusCode).send(response).end()
   }
 
