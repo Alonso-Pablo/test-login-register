@@ -40,7 +40,7 @@
 {
   "email": "foo@bar.com",
   "password": "qweQWE123!@#",
-  "password": "qweQWE123!@#"
+  "passwordConfirmation": "qweQWE123!@#"
 }
 ```
 #### Response: 201
