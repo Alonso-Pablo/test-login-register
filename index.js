@@ -42,15 +42,20 @@ const secretKey = 'htmlisaprogramminglanguage!'
 
 
 app.post('/login', async function(req, res) {
-  const response = { statusCode: 200, message: "Ok" }
+  let response = { statusCode: 0, message: "" }
   const { email, password } = req.body
+  let status = 200
+
+  if (!email && !password) {
+
+  }
 
   for (let i = 0; i < usersRegistered.length; i++) {
     /**
      * Si no encuentra el email ingresado en la "base de datos" lanza error.
      */
     if (email != usersRegistered[i].email) {
-      response.statusCode = 404
+      status = 404
       response.message = "EMAIL_NOT_FOUND"
       continue
     }
@@ -61,15 +66,20 @@ app.post('/login', async function(req, res) {
      */
     let isPassMatch = await bcrypt.compare(password, usersRegistered[i].password)
     if (!isPassMatch) {
-      response.statusCode = 401
+      status = 401
       response.message = "PASSWORD_WRONG"
       continue
     }
 
+    /**
+     * Firmamos un token con jwt y lo enviamos en el mensaje de respuesta del servidor.
+     */
+    const token = jwt.sign({ userId: i, email }, secretKey)
+    response = { accessToken: token }
     break
   }
 
-  res.status(response.statusCode).send(response).end()
+  res.status(status).send(response).end()
 })
 
 
@@ -163,7 +173,7 @@ app.post('/register', async function(req, res) {
   const token = jwt.sign({ userId: 2, email }, secretKey)
   response.message = { accessToken: token }
 
-  return res.status(response.message).send(response).end()
+  return res.status(response.statusCode).send(response.message).end()
 })
 
 
