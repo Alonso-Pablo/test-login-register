@@ -2,6 +2,7 @@ const express = require('express')
 const bcrypt = require('bcryptjs')
 const cors = require('cors')
 const app = express()
+const jwt = require('jsonwebtoken')
 const PORT = 3001 // Puerto en el que corre.
 
 app.use(cors())
@@ -23,12 +24,21 @@ const usersRegistered = [
   },
 ]
 
+/**
+ * Las diferentes expresiones regulares para buscar diferentes caracteres en la contraseña.
+ */
 const regex = {
   symbol: /[!-/:-@[`{-~]/g, // símbolo
   lowerCase: /[a-z]/g, // minúscula
   upperCase: /[A-Z]/g, // mayúscula
   number: /[0-9]/g, // número
 }
+
+/**
+ * Esta seria la palabra secreta que usaria jwt para encriptar el token.
+ * En casos reales debe ir en un .env o en una variable de entorno de la app para no mostrarlo al público.
+ */
+const secretKey = 'htmlisaprogramminglanguage!' 
 
 
 app.post('/login', async function(req, res) {
@@ -148,9 +158,12 @@ app.post('/register', async function(req, res) {
   }
 
   /**
-   * Si todo fue bien aqui se lanza un "Created" con estado 200
+   * Firmamos un token con jwt y lo enviamos en el mensaje de respuesta del servidor.
    */
-  return res.status(response.statusCode).send(response).end()
+  const token = jwt.sign({ userId: 2, email }, secretKey)
+  response.message = { accessToken: token }
+
+  return res.status(response.message).send(response).end()
 })
 
 
