@@ -1,15 +1,15 @@
 {
   "name": "test-login-register",
   "version": "1.0.0",
-  "description": "",
+  "description": "For test login and register POST",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "start:dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["nodejs", "expressjs"],
+  "author": "Alonso Pablo",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
